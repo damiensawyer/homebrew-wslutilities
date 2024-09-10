@@ -5,17 +5,15 @@ class Wslu < Formula
   sha256 "d5bfa71d3799d5fda50d5e13be87d77df71b5e1b61462f63d85d5ba54efc4f85"
   version "3.1.0"
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
-
   def install
-
-    # Ensure the configure script is executable
+    # Ensure the configure.sh script is executable
     chmod "+x", "configure.sh"
 
-    # Run configure and make
+    # Run configure.sh with the correct prefix
     system "./configure.sh", "--prefix=#{prefix}"
-    system "make"
+
+    # Run make with the prefix if necessary
+    system "make", "PREFIX=#{prefix}"
 
     # Install the binaries manually from the 'out' directory
     bin.install Dir["out/*"]
