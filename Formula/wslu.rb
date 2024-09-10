@@ -13,7 +13,7 @@ class Wslu < Formula
   def install
     ENV["DESTDIR"] = prefix
     ENV["PREFIX"] = ""
-    
+
     system "make", "all"
     system "make", "install"
 
@@ -26,12 +26,21 @@ class Wslu < Formula
     <<~EOS
       wslu is designed for Windows Subsystem for Linux (WSL) environments.
       It may not function correctly in a standard Linux environment.
-      
+
       Bash completion may not be available for this installation.
     EOS
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/wslsys -v")
+  end
+
+  # Hook for uninstallation before brew removes the files
+  def pre_uninstall
+    # Call make uninstall with necessary environment variables
+    ENV["DESTDIR"] = prefix
+    ENV["PREFIX"] = ""
+
+    system "make", "uninstall"
   end
 end
