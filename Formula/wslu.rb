@@ -9,14 +9,12 @@ class Wslu < Formula
   depends_on "automake" => :build
 
   def install
-    # Run autoreconf to generate configure script
-    system "autoreconf", "-i"
 
     # Ensure the configure script is executable
-    chmod "+x", "configure"
+    chmod "+x", "configure.sh"
 
     # Run configure and make
-    system "./configure", "--prefix=#{prefix}"
+    system "./configure.sh", "--prefix=#{prefix}"
     system "make"
 
     # Install the binaries manually from the 'out' directory
