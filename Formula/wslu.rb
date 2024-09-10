@@ -12,14 +12,13 @@ class Wslu < Formula
     # Run configure.sh with the correct prefix
     system "./configure.sh", "--prefix=#{prefix}"
 
-    # Run make with the prefix if necessary
+    # Run make with the PREFIX set for the installation
     system "make", "PREFIX=#{prefix}"
 
-    # Install the binaries manually from the 'out' directory
-    bin.install Dir["out/*"]
+    # Install the binaries
+    system "make", "install", "PREFIX=#{prefix}"
 
-    # Optionally, install the man pages
-    man1.install Dir["out-docs/*.1.gz"]
-    man7.install Dir["out-docs/*.7.gz"]
+    # Optionally, install the man pages and resources
+    system "make", "doc_install", "res_install", "PREFIX=#{prefix}"
   end
 end
