@@ -5,20 +5,33 @@ class Wslu < Formula
   sha256 "d5bfa71d3799d5fda50d5e13be87d77df71b5e1b61462f63d85d5ba54efc4f85"
   version "3.1.0"
 
+  depends_on "make" => :build
+  depends_on "gzip" => :build
+  depends_on "bc"
+  depends_on "imagemagick"
+
   def install
-    # Ensure the configure.sh script is executable
-    chmod "+x", "configure.sh"
+    ENV["DESTDIR"] = prefix
+    ENV["PREFIX"] = ""
+    
+    system "make", "all"
+    system "make", "install"
 
-    # Run configure.sh with the correct prefix
-    system "./configure.sh", "--prefix=#{prefix}"
+    # Optionally, we can search for the bash completion file and install it if found
+    bash_completion_file = Dir.glob("**/*wslu").first
+    bash_completion.install bash_completion_file if bash_completion_file
+  end
 
-    # Run make with the PREFIX set for the installation
-    system "make", "PREFIX=#{prefix}"
+  def caveats
+    <<~EOS
+      wslu is designed for Windows Subsystem for Linux (WSL) environments.
+      It may not function correctly in a standard Linux environment.
+      
+      Bash completion may not be available for this installation.
+    EOS
+  end
 
-    # Install the binaries
-    system "make", "install", "PREFIX=#{prefix}"
-
-    # Optionally, install the man pages and resources
-    system "make", "doc_install", "res_install", "PREFIX=#{prefix}"
+  test do
+    assert_match version.to_s, shell_output("#{bin}/wslsys -v")
   end
 end
